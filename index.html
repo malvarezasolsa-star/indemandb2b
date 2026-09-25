@@ -1,0 +1,682 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Cotizador de planes móviles con equipo: subsidio por payback, financiamiento al 30% de la renta y cálculo de prima.">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📱</text></svg>">
+<style>
+  :root{color-scheme:light dark;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+  html,body{margin:0}
+  img{max-width:100%}
+  [hidden]{display:none!important}
+</style>
+<title>Cotizador Móvil B2B</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root{
+    --bg:#EEF1F4;
+    --surface:#FFFFFF;
+    --surface-2:#F7F9FA;
+    --line:#D7DEE4;
+    --line-soft:#E6EBEF;
+    --ink:#13212C;
+    --muted:#5D6D7A;
+    --faint:#8A99A5;
+    --accent:#0B5E75;
+    --accent-soft:#DDEFF3;
+    --ok:#1E7A52;
+    --ok-soft:#DCF0E6;
+    --warn:#9A6212;
+    --warn-soft:#FAEDD4;
+    --bad:#A33327;
+    --bad-soft:#F8E1DD;
+    --shadow:0 1px 2px rgba(19,33,44,.06),0 8px 24px rgba(19,33,44,.06);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#0D161C;
+      --surface:#131F27;
+      --surface-2:#18262F;
+      --line:#27373F;
+      --line-soft:#1E2D35;
+      --ink:#E6EDF1;
+      --muted:#9DAEB9;
+      --faint:#7A8B96;
+      --accent:#5BC0D8;
+      --accent-soft:#12303A;
+      --ok:#5FD3A0;
+      --ok-soft:#10312A;
+      --warn:#E7B45C;
+      --warn-soft:#332714;
+      --bad:#F0867A;
+      --bad-soft:#35191A;
+      --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 28px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#0D161C; --surface:#131F27; --surface-2:#18262F; --line:#27373F; --line-soft:#1E2D35;
+    --ink:#E6EDF1; --muted:#9DAEB9; --faint:#7A8B96; --accent:#5BC0D8; --accent-soft:#12303A;
+    --ok:#5FD3A0; --ok-soft:#10312A; --warn:#E7B45C; --warn-soft:#332714; --bad:#F0867A; --bad-soft:#35191A;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 28px rgba(0,0,0,.35);
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;background:var(--bg);color:var(--ink);
+    font-family:"IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1180px;margin:0 auto;padding:0 16px;padding-block:22px 48px}
+  h1,h2,h3{font-family:Archivo,"IBM Plex Sans",sans-serif;margin:0;text-wrap:balance}
+  .num{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums}
+
+  /* header */
+  header.top{display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end;justify-content:space-between;margin-bottom:20px}
+  .brandline{display:flex;align-items:center;gap:10px}
+  .mark{width:30px;height:30px;border-radius:8px;background:var(--accent);display:grid;place-items:center;color:var(--surface);font-family:Archivo;font-weight:700;font-size:13px;flex:none}
+  :root[data-theme="dark"] .mark,:root:not([data-theme="light"]) .mark{color:#0D161C}
+  @media (prefers-color-scheme: light){:root:not([data-theme="dark"]) .mark{color:#fff}}
+  h1{font-size:19px;font-weight:600;letter-spacing:-.01em}
+  .sub{color:var(--muted);font-size:12.5px;margin-top:1px}
+  .eyebrow{font-size:10.5px;letter-spacing:.11em;text-transform:uppercase;color:var(--faint);font-weight:600}
+
+  .grid{display:grid;grid-template-columns:minmax(0,1.32fr) minmax(0,1fr);gap:18px;align-items:start}
+  @media(max-width:920px){.grid{grid-template-columns:1fr}}
+
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow)}
+  .card + .card{margin-top:16px}
+  .card-hd{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:14px 16px 10px}
+  .card-hd h2{font-size:14.5px;font-weight:600;letter-spacing:-.005em}
+  .card-hd .hint{font-size:11.5px;color:var(--faint)}
+  .card-bd{padding:0 16px 16px}
+
+  table.lines{width:100%;border-collapse:collapse}
+  table.lines th{font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--faint);font-weight:600;text-align:left;padding:0 8px 6px 0;border-bottom:1px solid var(--line-soft)}
+  table.lines th.r,table.lines td.r{text-align:right}
+  table.lines td{padding:5px 8px 5px 0;border-bottom:1px solid var(--line-soft);vertical-align:middle}
+  table.lines tr:last-child td{border-bottom:0}
+  .tbl-scroll{overflow-x:auto}
+
+  select,input[type=number],input[type=text]{
+    width:100%;font:inherit;color:var(--ink);background:var(--surface-2);
+    border:1px solid var(--line);border-radius:7px;padding:6px 8px;min-width:0;
+  }
+  input[type=number]{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;text-align:right}
+  select:focus-visible,input:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+  .qty{max-width:74px}
+  .cell-val{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;font-size:12.5px;color:var(--muted);white-space:nowrap}
+  .cell-tot{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;font-size:12.5px;font-weight:500;white-space:nowrap}
+  .na{color:var(--faint)}
+
+  .totrow{display:flex;justify-content:space-between;align-items:baseline;margin-top:10px;padding-top:9px;border-top:1px solid var(--line)}
+  .totrow .lbl{font-size:11.5px;color:var(--muted)}
+  .totrow .val{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;font-weight:600;font-size:14px}
+
+  .params{display:grid;grid-template-columns:repeat(auto-fit,minmax(138px,1fr));gap:12px}
+  .field label{display:block;font-size:11px;color:var(--muted);margin-bottom:4px}
+  .field .note{font-size:10.5px;color:var(--faint);margin-top:3px;line-height:1.3}
+  .seg{display:flex;gap:6px}
+  .seg button{flex:1;font:inherit;font-size:12.5px;padding:6px 4px;border-radius:7px;border:1px solid var(--line);background:var(--surface-2);color:var(--muted);cursor:pointer}
+  .seg button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--surface);font-weight:600}
+  :root[data-theme="dark"] .seg button[aria-pressed="true"],:root:not([data-theme="light"]) .seg button[aria-pressed="true"]{color:#0D161C}
+
+  /* resumen */
+  aside.summary{position:sticky;top:calc(env(safe-area-inset-top,0px) + 14px)}
+  @media(max-width:920px){aside.summary{position:static}}
+  .headline{padding:16px 16px 14px;border-bottom:1px solid var(--line)}
+  .headline .eyebrow{margin-bottom:6px}
+  .bignum{font-family:Archivo;font-size:31px;font-weight:700;letter-spacing:-.02em;line-height:1.05;font-variant-numeric:tabular-nums}
+  .bigsub{font-family:"IBM Plex Mono",monospace;font-size:12.5px;color:var(--muted);margin-top:3px;font-variant-numeric:tabular-nums}
+  .split{display:grid;grid-template-columns:repeat(3,1fr);border-bottom:1px solid var(--line)}
+  .split > div{padding:11px 12px}
+  .split > div + div{border-left:1px solid var(--line)}
+  .split .k{font-size:9.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--faint);font-weight:600}
+  .split .v{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;font-size:14.5px;font-weight:500;margin-top:2px}
+  .split .v.alert{color:var(--warn)}
+
+  dl.calc{margin:0;padding:12px 16px 4px}
+  dl.calc .row{display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:baseline;padding:4px 0}
+  dl.calc dt{font-size:12.5px;color:var(--muted);min-width:0}
+  dl.calc dt small{display:block;font-size:10.5px;color:var(--faint);line-height:1.25}
+  dl.calc dd{margin:0;font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;font-size:12.5px;white-space:nowrap}
+  dl.calc dd.usd{font-weight:600}
+  dl.calc dd.cor{color:var(--muted);min-width:82px;text-align:right}
+  dl.calc .row.sep{border-top:1px solid var(--line-soft);margin-top:5px;padding-top:9px}
+  dl.calc .row.strong dt{color:var(--ink);font-weight:600}
+  dl.calc .row.strong dd{font-weight:600}
+  .colhead{display:grid;grid-template-columns:1fr auto auto;gap:10px;padding:0 16px 2px}
+  .colhead span{font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--faint);font-weight:600;text-align:right}
+  .colhead span:first-child{text-align:left}
+  .colhead span.c2{min-width:82px}
+
+  .checks{padding:12px 16px 16px;display:flex;flex-direction:column;gap:7px}
+  .chk{display:flex;gap:9px;align-items:flex-start;padding:8px 10px;border-radius:8px;font-size:12px;line-height:1.35}
+  .chk .dot{width:8px;height:8px;border-radius:50%;flex:none;margin-top:4px}
+  .chk.ok{background:var(--ok-soft);color:var(--ok)}
+  .chk.ok .dot{background:var(--ok)}
+  .chk.warn{background:var(--warn-soft);color:var(--warn)}
+  .chk.warn .dot{background:var(--warn)}
+  .chk.bad{background:var(--bad-soft);color:var(--bad)}
+  .chk.bad .dot{background:var(--bad)}
+  .chk b{font-weight:600}
+
+  .anexo{padding:2px 16px 16px}
+  .anexo table{width:100%;border-collapse:collapse}
+  .anexo td{padding:6px 0;border-bottom:1px solid var(--line-soft);font-size:12.5px;color:var(--muted)}
+  .anexo td.v{text-align:right;font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;color:var(--ink);white-space:nowrap}
+  .anexo tr:last-child td{border-bottom:0;font-weight:600;color:var(--ink)}
+  .tagline{display:inline-flex;align-items:center;gap:6px;font-size:10.5px;color:var(--faint);padding:0 16px 14px}
+
+  details.pricebook{margin-top:16px}
+  details.pricebook summary{cursor:pointer;padding:12px 16px;font-size:12.5px;color:var(--muted);list-style:none;display:flex;justify-content:space-between;align-items:center}
+  details.pricebook summary::-webkit-details-marker{display:none}
+  details.pricebook summary::after{content:"+";font-family:"IBM Plex Mono",monospace;color:var(--faint)}
+  details.pricebook[open] summary::after{content:"–"}
+  .pb-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;padding:0 16px 16px}
+  @media(max-width:700px){.pb-grid{grid-template-columns:1fr}}
+  .pb-list{max-height:260px;overflow:auto;border:1px solid var(--line-soft);border-radius:8px}
+  .pb-row{display:grid;grid-template-columns:1fr 92px;gap:8px;align-items:center;padding:4px 8px;border-bottom:1px solid var(--line-soft);font-size:12px}
+  .pb-row:last-child{border-bottom:0}
+  .pb-row span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .pb-row input{padding:3px 6px;font-size:11.5px}
+
+  .btn{font:inherit;font-size:12.5px;padding:7px 12px;border-radius:8px;border:1px solid var(--line);background:var(--surface-2);color:var(--ink);cursor:pointer}
+  .btn:hover{border-color:var(--accent);color:var(--accent)}
+  .btnrow{display:flex;gap:8px;flex-wrap:wrap;padding:0 16px 16px}
+  footer{margin-top:22px;font-size:11.5px;color:var(--faint);line-height:1.5}
+  @media (prefers-reduced-motion:no-preference){.chk{transition:background .18s ease,color .18s ease}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brandline">
+      <div class="mark">B2B</div>
+      <div>
+        <h1>Cotizador Planes Móviles con Equipo</h1>
+        <div class="sub">Renta, subsidio, financiamiento y datos del anexo · Nicaragua</div>
+      </div>
+    </div>
+    <div style="text-align:right">
+      <div class="eyebrow">Factura mensual estimada</div>
+      <div class="num" style="font-family:Archivo;font-weight:700;font-size:20px" id="hdr-factura">—</div>
+    </div>
+  </header>
+
+  <div class="grid">
+    <!-- ENTRADAS -->
+    <section>
+      <div class="card">
+        <div class="card-hd"><h2>Planes móviles</h2><span class="hint">Tarifa mensual sin IVA (US$)</span></div>
+        <div class="card-bd">
+          <div class="tbl-scroll">
+            <table class="lines">
+              <thead><tr><th style="width:44%">Plan</th><th class="r" style="width:20%">Tarifa US$</th><th class="r" style="width:16%">Cant.</th><th class="r" style="width:20%">Total C$</th></tr></thead>
+              <tbody id="plan-rows"></tbody>
+            </table>
+          </div>
+          <div class="totrow"><span class="lbl">Renta total del plan · <span id="plan-count" class="num">0</span> líneas</span><span class="val" id="plan-total">C$ 0.00</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-hd"><h2>Equipos</h2><span class="hint">Precio de lista C$ con IVA</span></div>
+        <div class="card-bd">
+          <div class="tbl-scroll">
+            <table class="lines">
+              <thead><tr><th style="width:44%">Modelo</th><th class="r" style="width:20%">Precio C$ c/IVA</th><th class="r" style="width:16%">Cant.</th><th class="r" style="width:20%">Total s/IVA</th></tr></thead>
+              <tbody id="eq-rows"></tbody>
+            </table>
+          </div>
+          <div class="totrow"><span class="lbl">Precio equipos sin IVA · <span id="eq-count" class="num">0</span> unidades</span><span class="val" id="eq-total">C$ 0.00</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-hd"><h2>Condiciones del contrato</h2><span class="hint">Valores editables</span></div>
+        <div class="card-bd">
+          <div class="params">
+            <div class="field">
+              <label for="plazo">Duración del contrato</label>
+              <div class="seg" id="seg-plazo">
+                <button type="button" data-v="18" aria-pressed="false">18 m</button>
+                <button type="button" data-v="24" aria-pressed="true">24 m</button>
+              </div>
+              <div class="note">Cuotas sin intereses</div>
+            </div>
+            <div class="field">
+              <label for="payback">Payback (meses de renta)</label>
+              <input type="number" id="payback" value="6" step="0.01" min="0">
+              <div class="note">Para prima cero se necesita: <span class="num" id="payback-cero">—</span></div>
+            </div>
+            <div class="field">
+              <label for="maxfin">% máximo financiable</label>
+              <input type="number" id="maxfin" value="30" step="1" min="0" max="100">
+              <div class="note">Sobre la renta mensual sin IVA</div>
+            </div>
+            <div class="field">
+              <label for="minfin">Mínimo financiable (US$)</label>
+              <input type="number" id="minfin" value="50" step="1" min="0">
+              <div class="note">Bajo este monto todo pasa a prima</div>
+            </div>
+            <div class="field">
+              <label for="tc">Tipo de cambio C$/US$</label>
+              <input type="number" id="tc" value="36.6243" step="0.0001" min="1">
+              <div class="note">Base del archivo original</div>
+            </div>
+            <div class="field">
+              <label for="iva">IVA (%)</label>
+              <input type="number" id="iva" value="15" step="0.1" min="0">
+              <div class="note">Para desagregar precios de lista</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card pricebook-card">
+        <details class="pricebook">
+          <summary>Listas de precios y tarifas — editar</summary>
+          <div class="pb-grid">
+            <div>
+              <div class="eyebrow" style="margin-bottom:6px">Tarifas de plan (US$/mes, sin IVA)</div>
+              <div class="pb-list" id="pb-planes"></div>
+            </div>
+            <div>
+              <div class="eyebrow" style="margin-bottom:6px">Equipos (C$ con IVA)</div>
+              <div class="pb-list" id="pb-equipos"></div>
+            </div>
+          </div>
+          <div class="btnrow"><button class="btn" type="button" id="btn-reset-precios">Restaurar precios originales</button></div>
+        </details>
+      </div>
+    </section>
+
+    <!-- RESUMEN -->
+    <aside class="summary">
+      <div class="card">
+        <div class="headline">
+          <div class="eyebrow">Factura mensual (sin IVA)</div>
+          <div class="bignum" id="big-factura">US$ 0.00</div>
+          <div class="bigsub" id="big-factura-cor">C$ 0.00 · renta + cuota de equipo</div>
+        </div>
+        <div class="split">
+          <div><div class="k">Renta del plan</div><div class="v" id="sp-renta">C$ 0.00</div></div>
+          <div><div class="k">Cuota equipo</div><div class="v" id="sp-cuota">C$ 0.00</div></div>
+          <div><div class="k">Prima a pagar</div><div class="v" id="sp-prima">C$ 0.00</div></div>
+        </div>
+
+        <div class="colhead"><span>Concepto</span><span class="c2">C$</span><span>US$</span></div>
+        <dl class="calc" id="calc-body"></dl>
+
+        <div class="checks" id="checks"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-hd"><h2>Datos para el anexo</h2><span class="hint">Todos con IVA, en C$</span></div>
+        <div class="anexo">
+          <table>
+            <tbody id="anexo-body"></tbody>
+          </table>
+        </div>
+        <span class="tagline">Uso interno · valores calculados con IVA incluido</span>
+      </div>
+
+      <div class="card">
+        <div class="btnrow" style="padding-top:14px">
+          <button class="btn" type="button" id="btn-copy">Copiar resumen</button>
+          <button class="btn" type="button" id="btn-clear">Limpiar cotización</button>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <footer>
+    Base de cálculo: la renta contratada es la suma de las tarifas de plan sin IVA. El <strong>financiamiento disponible</strong> es el 30% de esa renta mensual multiplicado por los meses del contrato. El <strong>subsidio</strong> es la renta contratada × el payback. Del precio del equipo sin IVA se restan subsidio y financiamiento, y lo que sobra es la <strong>prima</strong> que paga el cliente. El monto financiado se divide en cuotas iguales durante la vigencia y no puede quedar bajo el mínimo de US$ 50: si queda por debajo, se cobra completo como prima. El bloque del anexo expresa los mismos valores en córdobas con IVA.
+  </footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var PLANES_BASE = [
+    ["N/A", 0],
+    ["OC1", 9.497139520933418],
+    ["1G1", 12.46499562122511],
+    ["1H1", 14.17],
+    ["1I1", 15.93145154636581],
+    ["1J1", 16.77],
+    ["1K1", 17.61719381133149],
+    ["1L1", 20.28],
+    ["1M1", 22.00962083976319],
+    ["OD1", 23.03056333826354],
+    ["1O1", 27.23304757627658],
+    ["1P1", 29.844760944533267],
+    ["1Q1", 31.60173175590595],
+    ["1S1", 40.29161441756003],
+    ["1T1", 47.21],
+    ["1U1", 57.67137974086818],
+    ["1W1", 73.93523117046666],
+    ["1X1", 82.64885668092307],
+    ["1Y1", 86.99379801175012]
+  ];
+
+  var EQUIPOS_BASE = [
+    ["N/A",0],["BMOBILE MEGA W51",799],["BMOBILE ORION A1",2949],["HONOR 400",16389],
+    ["HONOR 400 LITE",11119],["HONOR 400 PRO 512GB",23549],["HONOR 600 5G 256GB",28179],
+    ["HONOR 600 E 256GB",18919],["HONOR MAGIC 7 LITE 512GB",14069],["HONOR MAGIC 8 LITE 512GB",15549],
+    ["HONOR X5B 128GB",3709],["HONOR X5C 128GB",3369],["HONOR X5D 128GB",5899],["HONOR X6c",6109],
+    ["HONOR X7D",7799],["IPHONE 17 5G 256GB",43129],["IPHONE 17 PRO 5G 256GB",62299],
+    ["IPHONE 17 PRO MAX 5G 256GB",67349],["MOTOROLA G06 256GB",6949],["SAMSUNG GALAXY A07 128GB",6109],
+    ["SAMSUNG GALAXY A17 128GB",7799],["SAMSUNG GALAXY A26 256GB",9649],["SAMSUNG GALAXY A27 256GB",18489],
+    ["SAMSUNG GALAXY A36",13859],["SAMSUNG GALAXY A37 256GB",18069],["SAMSUNG GALAXY A56",16809],
+    ["SAMSUNG GALAXY A57 256GB",23969],["SAMSUNG GALAXY S25 FE 256GB",28599],["SAMSUNG GALAXY S26 256GB",40399],
+    ["SAMSUNG GALAXY S26 PLUS 256GB",50549],["SAMSUNG GALAXY S26 ULTRA 512GB",69459],
+    ["SAMSUNG Z FLIP 8 12GB+256GB",50499],["SAMSUNG Z FOLD 8 ULTRA 12GB+512GB",96829],
+    ["ZTE BLADE A35E",2529],["ZTE BLADE A36",3289],["ZTE BLADE A56 128GB",3799],
+    ["ZTE BLADE A56 PRO 128GB",3799],["ZTE BLADE V70 DESIGN",3629],["ZTE BLADE V80 MAX 256GB",4219]
+  ];
+
+  var planes = PLANES_BASE.map(function(p){return [p[0],p[1]];});
+  var equipos = EQUIPOS_BASE.map(function(p){return [p[0],p[1]];});
+
+  // estado inicial de ejemplo (equivalente al archivo original)
+  var lineasPlan = [
+    {cod:"1J1", qty:5},{cod:"N/A", qty:0},{cod:"N/A", qty:0},{cod:"N/A", qty:0},{cod:"N/A", qty:0}
+  ];
+  var lineasEq = [
+    {mod:"SAMSUNG GALAXY A27 256GB", qty:5},{mod:"N/A", qty:0},{mod:"N/A", qty:0},{mod:"N/A", qty:0},{mod:"N/A", qty:0}
+  ];
+  var plazo = 24;
+
+  var $ = function(id){return document.getElementById(id);};
+  function money(v, cur){
+    if(!isFinite(v)) v = 0;
+    var s = Math.abs(v).toLocaleString("es-NI",{minimumFractionDigits:2,maximumFractionDigits:2});
+    return (v<0?"-":"") + cur + " " + s;
+  }
+  function usd(v){return money(v,"US$");}
+  function cor(v){return money(v,"C$");}
+  function pct(v){ if(!isFinite(v)) v=0; return (v*100).toFixed(1).replace(".",",")+"%"; }
+  function precioPlan(c){ for(var i=0;i<planes.length;i++){ if(planes[i][0]===c) return planes[i][1]; } return null; }
+  function precioEquipo(m){ for(var i=0;i<equipos.length;i++){ if(equipos[i][0]===m) return equipos[i][1]; } return null; }
+
+  function opts(list, sel){
+    return list.map(function(p){
+      return '<option value="'+p[0].replace(/"/g,'&quot;')+'"'+(p[0]===sel?' selected':'')+'>'+p[0]+'</option>';
+    }).join("");
+  }
+
+  function renderRows(){
+    $("plan-rows").innerHTML = lineasPlan.map(function(l,i){
+      var p = precioPlan(l.cod);
+      var disp = p===null ? '<span class="na">No disponible</span>' : p.toFixed(2);
+      return '<tr>'+
+        '<td><select id="plan-sel-'+i+'" data-i="'+i+'" class="plan-sel">'+opts(planes,l.cod)+'</select></td>'+
+        '<td class="r cell-val">'+disp+'</td>'+
+        '<td class="r"><input type="number" class="qty plan-qty" id="plan-qty-'+i+'" data-i="'+i+'" min="0" step="1" value="'+l.qty+'"></td>'+
+        '<td class="r cell-tot" id="plan-tot-'+i+'">0.00</td>'+
+      '</tr>';
+    }).join("");
+
+    $("eq-rows").innerHTML = lineasEq.map(function(l,i){
+      var p = precioEquipo(l.mod);
+      var disp = p===null ? '<span class="na">No disponible</span>' : p.toLocaleString("es-NI");
+      return '<tr>'+
+        '<td><select id="eq-sel-'+i+'" data-i="'+i+'" class="eq-sel">'+opts(equipos,l.mod)+'</select></td>'+
+        '<td class="r cell-val">'+disp+'</td>'+
+        '<td class="r"><input type="number" class="qty eq-qty" id="eq-qty-'+i+'" data-i="'+i+'" min="0" step="1" value="'+l.qty+'"></td>'+
+        '<td class="r cell-tot" id="eq-tot-'+i+'">0.00</td>'+
+      '</tr>';
+    }).join("");
+  }
+
+  function renderPricebook(){
+    $("pb-planes").innerHTML = planes.filter(function(p){return p[0]!=="N/A";}).map(function(p){
+      var idx = planes.indexOf(p);
+      return '<div class="pb-row"><span title="'+p[0]+'">'+p[0]+'</span>'+
+        '<input type="number" step="0.01" min="0" id="pbp-'+idx+'" data-i="'+idx+'" class="pb-plan" value="'+p[1].toFixed(2)+'"></div>';
+    }).join("");
+    $("pb-equipos").innerHTML = equipos.filter(function(p){return p[0]!=="N/A";}).map(function(p){
+      var idx = equipos.indexOf(p);
+      return '<div class="pb-row"><span title="'+p[0]+'">'+p[0]+'</span>'+
+        '<input type="number" step="1" min="0" id="pbe-'+idx+'" data-i="'+idx+'" class="pb-eq" value="'+p[1]+'"></div>';
+    }).join("");
+  }
+
+  var last = {};
+
+  function calc(){
+    var TC = parseFloat($("tc").value) || 36.6243;
+    var IVA = (parseFloat($("iva").value) || 0)/100;
+    var payback = parseFloat($("payback").value) || 0;
+    var maxFin = (parseFloat($("maxfin").value) || 0)/100;
+    var minFinUSD = parseFloat($("minfin").value);
+    if(!isFinite(minFinUSD)) minFinUSD = 50;
+
+    // Planes
+    var rentaUSD = 0, lineasActivas = 0;
+    lineasPlan.forEach(function(l,i){
+      var p = precioPlan(l.cod) || 0;
+      var totC = l.qty * p * TC;
+      rentaUSD += l.qty * p;
+      lineasActivas += (p>0 ? l.qty : 0);
+      var cell = $("plan-tot-"+i); if(cell) cell.textContent = totC.toLocaleString("es-NI",{minimumFractionDigits:2,maximumFractionDigits:2});
+    });
+    var rentaCOR = rentaUSD * TC;
+
+    // Equipos
+    var eqSinIvaCOR = 0, unidades = 0;
+    lineasEq.forEach(function(l,i){
+      var p = precioEquipo(l.mod) || 0;
+      var totC = (l.qty * p) / (1 + IVA);
+      eqSinIvaCOR += totC;
+      unidades += (p>0 ? l.qty : 0);
+      var cell = $("eq-tot-"+i); if(cell) cell.textContent = totC.toLocaleString("es-NI",{minimumFractionDigits:2,maximumFractionDigits:2});
+    });
+    var eqSinIvaUSD = eqSinIvaCOR / TC;
+
+    // --- Subsidio: renta contratada x payback
+    var subsidioUSD = rentaUSD * payback;
+
+    // --- Capacidad de financiamiento: % de la renta mensual, por los meses del contrato
+    var capacidadMensualUSD = rentaUSD * maxFin;
+    var capacidadTotalUSD = capacidadMensualUSD * plazo;
+
+    // --- Saldo del equipo después del subsidio
+    var saldoUSD = Math.max(0, eqSinIvaUSD - subsidioUSD);
+
+    // --- Se financia el menor entre el saldo y la capacidad; bajo el mínimo, todo pasa a prima
+    var financiarUSD = Math.min(saldoUSD, capacidadTotalUSD);
+    var bajoMinimo = financiarUSD > 0 && financiarUSD < minFinUSD;
+    if(bajoMinimo) financiarUSD = 0;
+
+    var primaUSD = Math.max(0, eqSinIvaUSD - subsidioUSD - financiarUSD);
+    var cuotaUSD = plazo > 0 ? financiarUSD / plazo : 0;
+    var ratio = rentaUSD > 0 ? cuotaUSD / rentaUSD : 0;
+    var facturaUSD = rentaUSD + cuotaUSD;
+    var holguraUSD = capacidadTotalUSD - financiarUSD;
+    // Payback necesario para que el cliente no pague prima
+    var paybackCero = rentaUSD > 0 ? Math.max(0,(eqSinIvaUSD - capacidadTotalUSD) / rentaUSD) : 0;
+
+    // Anexo (C$ con IVA)
+    var listaCOR = eqSinIvaCOR * (1 + IVA);
+    var primaCOR = primaUSD * TC * (1 + IVA);
+    var preferencialCOR = (eqSinIvaCOR - subsidioUSD * TC) * (1 + IVA);
+    var cuotaAnexoCOR = plazo > 0 ? (financiarUSD * TC * (1 + IVA)) / plazo : 0;
+    var rentaTotalCOR = cuotaAnexoCOR + rentaCOR * (1 + IVA);
+
+    // Pintar
+    $("plan-count").textContent = lineasActivas;
+    $("plan-total").textContent = cor(rentaCOR);
+    $("eq-count").textContent = unidades;
+    $("eq-total").textContent = cor(eqSinIvaCOR);
+    $("payback-cero").textContent = rentaUSD>0 && eqSinIvaUSD>0 ? paybackCero.toFixed(2)+" meses" : "—";
+
+    $("hdr-factura").textContent = cor(facturaUSD*TC);
+    $("big-factura").textContent = cor(facturaUSD*TC);
+    $("big-factura-cor").textContent = usd(facturaUSD) + " · renta + cuota de equipo";
+    $("sp-renta").textContent = cor(rentaCOR);
+    $("sp-cuota").textContent = cor(cuotaUSD*TC);
+    var spPrima = $("sp-prima");
+    spPrima.textContent = cor(primaUSD*TC);
+    spPrima.className = "v" + (primaUSD > 0 ? " alert" : "");
+
+    var rows = [
+      ["Renta contratada del plan","Tarifas × cantidad, mensual sin IVA", rentaCOR, rentaUSD, false, false],
+      ["Capacidad de financiamiento mensual","Renta × "+(maxFin*100).toFixed(0)+"%", capacidadMensualUSD*TC, capacidadMensualUSD, false, false],
+      ["Financiamiento disponible","Capacidad mensual × "+plazo+" meses", capacidadTotalUSD*TC, capacidadTotalUSD, false, false],
+      ["Subsidio por contratación","Renta × "+payback.toFixed(2)+" de payback", subsidioUSD*TC, subsidioUSD, true, false],
+      ["Precio del equipo sin IVA","Precio de lista ÷ (1 + IVA)", eqSinIvaCOR, eqSinIvaUSD, true, false],
+      ["Monto financiado","El menor entre el saldo y lo disponible", financiarUSD*TC, financiarUSD, false, false],
+      ["Prima a pagar","Equipo − subsidio − financiamiento", primaUSD*TC, primaUSD, false, false],
+      ["Cuota mensual del equipo","Monto financiado ÷ "+plazo+" cuotas", cuotaUSD*TC, cuotaUSD, true, false],
+      ["Factura mensual","Renta del plan + cuota del equipo", facturaUSD*TC, facturaUSD, false, true]
+    ];
+    $("calc-body").innerHTML = rows.map(function(r){
+      return '<div class="row'+(r[4]?' sep':'')+(r[5]?' strong':'')+'">'+
+        '<dt>'+r[0]+'<small>'+r[1]+'</small></dt>'+
+        '<dd class="cor">'+cor(r[2]).replace("C$ ","")+'</dd>'+
+        '<dd class="usd">'+usd(r[3]).replace("US$ ","")+'</dd>'+
+      '</div>';
+    }).join("") +
+      '<div class="row"><dt>Cuota / renta del plan<small>Peso del equipo sobre la renta</small></dt><dd class="cor">—</dd><dd class="usd">'+pct(ratio)+'</dd></div>';
+
+    $("anexo-body").innerHTML = [
+      ["Precio de lista del equipo (ii)", listaCOR],
+      ["Prima a pagar de contado", primaCOR],
+      ["Precio preferencial de la terminal (iii)", preferencialCOR],
+      ["Nivel de precio del equipo (iv) · cuota mensual", cuotaAnexoCOR],
+      ["Renta total con IVA (plan + SVA + cuotas)", rentaTotalCOR]
+    ].map(function(r){
+      return '<tr><td>'+r[0]+'</td><td class="v">'+cor(r[1])+'</td></tr>';
+    }).join("");
+
+    // Semáforos
+    var checks = [];
+    if(rentaUSD <= 0){
+      checks.push(["warn","Sin renta cargada","Seleccioná al menos un plan con cantidad mayor a cero."]);
+    }
+    if(eqSinIvaUSD <= 0){
+      checks.push(["warn","Sin equipo cargado","Agregá un modelo para calcular subsidio, financiamiento y prima."]);
+    }
+
+    if(rentaUSD > 0 && eqSinIvaUSD > 0){
+      // Prima
+      if(primaUSD <= 0){
+        checks.push(["ok","Sin prima","El subsidio y el financiamiento cubren el equipo completo."]);
+      }else{
+        checks.push(["warn","Prima de "+cor(primaUSD*TC),"Equivale a "+usd(primaUSD)+". Con payback de "+paybackCero.toFixed(2)+" meses la prima llega a cero."]);
+      }
+
+      // Uso de la capacidad
+      if(bajoMinimo){
+        checks.push(["bad","Financiamiento bajo el mínimo","El saldo quedó en menos de "+usd(minFinUSD)+", así que se cobra todo como prima."]);
+      }else if(financiarUSD <= 0){
+        checks.push(["ok","Sin cuotas de equipo","No hay saldo por financiar: el cliente solo paga la renta."]);
+      }else if(holguraUSD > 0.005){
+        checks.push(["ok","Financiamiento dentro del límite","Se usan "+cor(financiarUSD*TC)+" de "+cor(capacidadTotalUSD*TC)+" disponibles; quedan "+cor(holguraUSD*TC)+" de holgura."]);
+      }else{
+        checks.push(["warn","Capacidad de financiamiento agotada","El equipo consume el 100% del límite; el excedente se traslada a la prima."]);
+      }
+
+      // Regla del 30%
+      if(ratio <= maxFin + 1e-9){
+        checks.push(["ok","Cuota / renta en "+pct(ratio),"Dentro del "+pct(maxFin)+" permitido sobre la renta mensual."]);
+      }else{
+        checks.push(["bad","Cuota / renta en "+pct(ratio),"Excede el "+pct(maxFin)+" permitido."]);
+      }
+    }
+
+    $("checks").innerHTML = checks.map(function(c){
+      return '<div class="chk '+c[0]+'"><span class="dot"></span><span><b>'+c[1]+'</b> — '+c[2]+'</span></div>';
+    }).join("");
+
+    last = {TC:TC, rentaUSD:rentaUSD, rentaCOR:rentaCOR, eqSinIvaUSD:eqSinIvaUSD, subsidioUSD:subsidioUSD,
+            capacidadTotalUSD:capacidadTotalUSD, primaUSD:primaUSD, financiarUSD:financiarUSD,
+            cuotaUSD:cuotaUSD, facturaUSD:facturaUSD, ratio:ratio, plazo:plazo, payback:payback,
+            maxFin:maxFin, rentaTotalCOR:rentaTotalCOR};
+  }
+
+  // Eventos
+  document.addEventListener("input", function(e){
+    var t = e.target, i;
+    if(t.classList.contains("plan-qty")){ i=+t.dataset.i; lineasPlan[i].qty = Math.max(0, parseInt(t.value,10)||0); calc(); }
+    else if(t.classList.contains("eq-qty")){ i=+t.dataset.i; lineasEq[i].qty = Math.max(0, parseInt(t.value,10)||0); calc(); }
+    else if(t.classList.contains("pb-plan")){ i=+t.dataset.i; planes[i][1] = parseFloat(t.value)||0; refreshVals(); calc(); }
+    else if(t.classList.contains("pb-eq")){ i=+t.dataset.i; equipos[i][1] = parseFloat(t.value)||0; refreshVals(); calc(); }
+    else if(["tc","iva","payback","maxfin","minfin"].indexOf(t.id) >= 0){ calc(); }
+  });
+
+  document.addEventListener("change", function(e){
+    var t = e.target, i;
+    if(t.classList.contains("plan-sel")){ i=+t.dataset.i; lineasPlan[i].cod = t.value; refreshVals(); calc(); }
+    else if(t.classList.contains("eq-sel")){ i=+t.dataset.i; lineasEq[i].mod = t.value; refreshVals(); calc(); }
+  });
+
+  function refreshVals(){
+    lineasPlan.forEach(function(l,i){
+      var row = $("plan-sel-"+i); if(!row) return;
+      var p = precioPlan(l.cod);
+      row.closest("tr").children[1].innerHTML = p===null ? '<span class="na">No disponible</span>' : p.toFixed(2);
+    });
+    lineasEq.forEach(function(l,i){
+      var row = $("eq-sel-"+i); if(!row) return;
+      var p = precioEquipo(l.mod);
+      row.closest("tr").children[1].innerHTML = p===null ? '<span class="na">No disponible</span>' : p.toLocaleString("es-NI");
+    });
+  }
+
+  $("seg-plazo").addEventListener("click", function(e){
+    var b = e.target.closest("button"); if(!b) return;
+    plazo = parseInt(b.dataset.v,10);
+    Array.prototype.forEach.call(this.querySelectorAll("button"), function(x){
+      x.setAttribute("aria-pressed", x===b ? "true":"false");
+    });
+    calc();
+  });
+
+  $("btn-reset-precios").addEventListener("click", function(){
+    planes = PLANES_BASE.map(function(p){return [p[0],p[1]];});
+    equipos = EQUIPOS_BASE.map(function(p){return [p[0],p[1]];});
+    renderPricebook(); refreshVals(); calc();
+  });
+
+  $("btn-clear").addEventListener("click", function(){
+    lineasPlan = lineasPlan.map(function(){return {cod:"N/A", qty:0};});
+    lineasEq = lineasEq.map(function(){return {mod:"N/A", qty:0};});
+    renderRows(); calc();
+  });
+
+  $("btn-copy").addEventListener("click", function(){
+    var L = last;
+    var T = L.TC;
+    var txt = [
+      "COTIZACIÓN PLANES MÓVILES CON EQUIPO",
+      "Renta contratada: "+cor(L.rentaCOR)+" ("+usd(L.rentaUSD)+")",
+      "Precio equipo sin IVA: "+cor(L.eqSinIvaUSD*T),
+      "Subsidio ("+L.payback.toFixed(2)+" de payback): "+cor(L.subsidioUSD*T),
+      "Financiamiento disponible ("+pct(L.maxFin)+" × "+L.plazo+" meses): "+cor(L.capacidadTotalUSD*T),
+      "Monto financiado: "+cor(L.financiarUSD*T),
+      "Prima a pagar: "+cor(L.primaUSD*T),
+      "Cuota mensual: "+cor(L.cuotaUSD*T)+"  |  Cuota/renta: "+pct(L.ratio),
+      "Factura mensual (sin IVA): "+cor(L.facturaUSD*T),
+      "Renta total con IVA (anexo): "+cor(L.rentaTotalCOR)
+    ].join("\n");
+    var btn = this;
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(txt).then(function(){
+        btn.textContent = "Resumen copiado";
+        setTimeout(function(){ btn.textContent = "Copiar resumen"; }, 1800);
+      }, function(){ btn.textContent = "No se pudo copiar"; setTimeout(function(){btn.textContent="Copiar resumen";},1800); });
+    }
+  });
+
+  renderRows();
+  renderPricebook();
+  calc();
+})();
+</script>
+</body>
+</html>
